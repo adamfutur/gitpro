@@ -1,0 +1,83 @@
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# API keys and secrets
+*.env
+config/secrets.yml
+config/application.yml
+
+# Backend specific
+backend/venv/
+backend/__pycache__/
+backend/*.pyc
+backend/.env
+backend/.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+venv/
+.venv/
+.venv.bak/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.git/modules/
+.pytest_cache/
+.hypothesis/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+node_modules/
+dist/
+build/
+.nyc_output
+coverage/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# OS
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+.directory
+.apdisk
+
+# Ignore common secrets/api files
+secrets.json
+api_keys.json
+credentials.json
+config.json
+token.json
+*.key
+*.pem
+id_rsa
+id_rsa.pub
