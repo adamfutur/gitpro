@@ -1,0 +1,13 @@
+flask
+flask-cors
+requests
+google-generativeai
+python-dotenv
+pyjwt
+radon
+nltk
+scikit-learn
+numpy
+joblib
+psycopg2-binary
+mcp

@@ -1,0 +1,214 @@
+version: '3.8'
+
+services:
+  # Redis for job queue
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - gitpro-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL databases
+  auth-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: auth_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
+      - ./services/auth-service/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - gitpro-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  repos-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: repos_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - repos-db-data:/var/lib/postgresql/data
+      - ./services/repo-service/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - gitpro-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  ai-db:
+    image: pgvector/pgvector:pg15
+    environment:
+      POSTGRES_DB: ai_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5434:5432"
+    volumes:
+      - ai-db-data:/var/lib/postgresql/data
+      - ./services/ai-service/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - gitpro-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  chat-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: chat_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5435:5432"
+    volumes:
+      - chat-db-data:/var/lib/postgresql/data
+      - ./services/chat-service/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - gitpro-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  webhook-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: webhook_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5436:5432"
+    volumes:
+      - webhook-db-data:/var/lib/postgresql/data
+      - ./services/webhook-service/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - gitpro-network
+
+  # Microservices
+  auth-service:
+    build: ./services/auth-service
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@auth-db:5432/auth_db?sslmode=disable
+      GITHUB_CLIENT_ID: ${GITHUB_CLIENT_ID}
+      GITHUB_CLIENT_SECRET: ${GITHUB_CLIENT_SECRET}
+      JWT_SECRET: ${JWT_SECRET:-your-secret-key-change-in-production}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    networks:
+      - gitpro-network
+
+  repo-service:
+    build: ./services/repo-service
+    ports:
+      - "8002:8002"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@repos-db:5432/repos_db?sslmode=disable
+      REDIS_URL: redis:6379
+    depends_on:
+      repos-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - gitpro-network
+
+  ai-service:
+    build: ./services/ai-service
+    ports:
+      - "8003:8003"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@ai-db:5432/ai_db?sslmode=disable
+      REDIS_URL: redis:6379
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    depends_on:
+      ai-db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - gitpro-network
+
+  chat-service:
+    build: ./services/chat-service
+    ports:
+      - "8004:8004"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@chat-db:5432/chat_db?sslmode=disable
+      AI_DB_URL: postgres://postgres:postgres@ai-db:5432/ai_db?sslmode=disable
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+    depends_on:
+      chat-db:
+        condition: service_healthy
+      ai-db:
+        condition: service_healthy
+    networks:
+      - gitpro-network
+
+  webhook-service:
+    build: ./services/webhook-service
+    ports:
+      - "8005:8005"
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@webhook-db:5432/webhook_db?sslmode=disable
+      REDIS_URL: redis:6379
+      GITHUB_WEBHOOK_SECRET: ${GITHUB_WEBHOOK_SECRET}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - gitpro-network
+
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "8000:8000"
+    environment:
+      AUTH_SERVICE_URL: http://auth-service:8001
+      REPO_SERVICE_URL: http://repo-service:8002
+      AI_SERVICE_URL: http://ai-service:8003
+      CHAT_SERVICE_URL: http://chat-service:8004
+      WEBHOOK_SERVICE_URL: http://webhook-service:8005
+    depends_on:
+      - auth-service
+      - repo-service
+      - ai-service
+      - chat-service
+      - webhook-service
+    networks:
+      - gitpro-network
+
+networks:
+  gitpro-network:
+    driver: bridge
+
+volumes:
+  auth-db-data:
+  repos-db-data:
+  ai-db-data:
+  chat-db-data:
+  webhook-db-data:

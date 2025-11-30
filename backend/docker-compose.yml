@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  backend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - FLASK_ENV=production
+      - PORT=3000
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost:8080}
+      - JWT_SECRET=${JWT_SECRET}
+    volumes:
+      - ./gitpro.db:/app/gitpro.db  # Persist database file
+    restart: unless-stopped
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+  # If you want to use a proper database instead of SQLite
+  db:
+    image: postgres:15-alpine
+    environment:
+      - POSTGRES_DB=gitpro
+      - POSTGRES_USER=gitpro_user
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-gitpro_pass}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
