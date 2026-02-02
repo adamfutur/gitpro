@@ -1,138 +1,133 @@
-
 # 🐦‍🔥 GitPro
-### **The AI-Powered GitHub Companion Platform**
+### **Ignite Your Codebase with Neural Intelligence**
 
-[![Python Version](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Framework](https://img.shields.io/badge/Backend-Python_Microservices-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://fastapi.tiangolo.com/)
-[![AI](https://img.shields.io/badge/AI-Google%20Gemini-orange?style=for-the-badge&logo=google-gemini)](https://deepmind.google/technologies/gemini/)
-[![Vector DB](https://img.shields.io/badge/Vector_Search-pgvector-4169E1?style=for-the-badge&logo=postgresql)](https://github.com/pgvector/pgvector)
+[![Python Core](https://img.shields.io/badge/Engine-Python_3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Cognition](https://img.shields.io/badge/Cognition-Google_Gemini-orange?style=for-the-badge&logo=google-gemini)](https://deepmind.google/technologies/gemini/)
+[![Memory](https://img.shields.io/badge/Neural_Memory-pgvector-00FFCC?style=for-the-badge&logo=postgresql)](https://github.com/pgvector/pgvector)
+[![Status](https://img.shields.io/badge/Status-Supercharged-red?style=for-the-badge&logo=rocket)](https://github.com/)
 
-**GitPro** is an advanced AI-driven ecosystem designed to transform how you interact with GitHub. It leverages Python's powerful AI library ecosystem to provide code analysis, vulnerability detection, and repository-aware conversations.
+**GitPro Phoenix** is a sentient microservices ecosystem that breathes life into static repositories. Like its namesake, it identifies the "ashes" of legacy code, security vulnerabilities, and technical debt, allowing your project to rise reborn through **Advanced Neural Analysis** and **Autonomous AI Reasoning**.
 
 ---
 
-## 🏗️ Microservices Architecture
+## 🏗️ The Phoenix Protocol (Microservices)
 
-GitPro runs on a distributed network of 6 Python services. Each service is isolated, scalable, and specialized:
+The system is powered by six high-frequency Python nodes, interconnected via an asynchronous neural mesh:
 
-| Service | Port | Description |
+| Node | Alias | Function |
 | :--- | :--- | :--- |
-| **🚀 API Gateway** | `8000` | Central entry point & request routing. |
-| **🔐 Auth Service** | `8001` | GitHub OAuth2 & JWT session management. |
-| **📦 Repo Service** | `8002` | Metadata sync & GitHub API orchestration. |
-| **🧠 AI Service** | `8003` | Embeddings generation & security scanning. |
-| **💬 Chat Service** | `8004` | RAG-based (Retrieval) conversational AI. |
-| **⚓ Webhook Service** | `8005` | Real-time event processing for push/pulls. |
+| 🛰️ **The Nexus** | `Gateway` | Orchestrates the flow of data across the internal mesh. |
+| 🔐 **The Embers** | `Auth` | Secure biometric-style JWT & GitHub OAuth signatures. |
+| 🌀 **The Vortex** | `Repo` | Ingesting raw repository streams into the system. |
+| 🧠 **The Cortex** | `AI` | The Phoenix's brain—generating vector embeddings & security scans. |
+| 💬 **The Oracle** | `Chat` | A repository-aware entity that speaks the language of your code. |
+| 📡 **The Pulse** | `Webhook` | Sensing every heartbeat (commit/push) in real-time. |
 
 ---
 
-## 🛠️ Tech Stack
+## 🧪 Genetic Tech Stack
 
-*   **Language:** Python 3.10+ (Asynchronous)
-*   **AI Engine:** Google Gemini AI (via `google-generativeai`)
-*   **Vector Database:** PostgreSQL with `pgvector` extension
-*   **Task Queue:** Redis for background analysis processing
-*   **Containerization:** Docker & Docker Compose
-*   **Frontend (Planned):** Next.js 14 with a Cyberpunk UI
+*   **Core Engine:** Asynchronous Python (FastAPI) — Fast, resilient, and non-blocking.
+*   **Neural Vision:** Google Gemini Pro — Deep-context reasoning for complex logic.
+*   **Total Recall:** `pgvector` — High-dimensional vector search to find code by "feeling," not just keywords.
+*   **The Adrenaline:** Redis — Powering the background task-queue for heavy lifting.
+*   **The Vessel:** Docker — Immutable containerization for seamless deployment.
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Ignition Sequence (Setup)
 
-### 1. Configure Environment
-Clone the repo and set up your secrets:
+### 1. Synchronize the Core
+Initialize your environmental matrix:
 ```bash
 cp .env.example .env
 ```
-Add your credentials to `.env`:
-- `GITHUB_CLIENT_ID` / `SECRET`
-- `GEMINI_API_KEY`
-- `JWT_SECRET`
+*Inject your GitHub Credentials and Gemini API Keys to wake the Phoenix.*
 
-### 2. Launch the Ecosystem
-Use Docker Compose to spin up all 6 services and the required databases:
+### 2. Initiate Lift-off
+Summon the entire microservice fleet:
 ```bash
-docker-compose up --build
+docker-compose up --build -d
 ```
+*This command materializes the infrastructure: 6 Services, 5 Neural Databases, and the Redis Pulse.*
 
-### 3. Verify System Health
+### 3. Bio-Scan (Health Check)
 ```bash
-# Check the Gateway
+# Verify the Nexus is online
 curl http://localhost:8000/health
-
-# Check the AI Engine
-curl http://localhost:8003/health
 ```
 
 ---
 
-## 📡 API Endpoints
+## 📡 Cognitive Capabilities
 
-### 🔐 Authentication
-`GET /api/auth/github` — Login with GitHub  
-`GET /api/auth/me` — Get current user session  
+### 🔎 Deep Scanning
+Ask the Phoenix to audit your security posture:
+`POST /api/repos/:id/analyze`  
+*Scans for vulnerabilities and architectural rot in the shadows of your code.*
 
-### 📂 Repository Management
-`GET /api/repos` — List all synced repositories  
-`POST /api/repos/:id/sync` — Manually trigger GitHub sync  
-`POST /api/repos/:id/analyze` — Run AI Security & Quality audit  
+### 💬 Neural Conversation
+Dialogue with your repository:
+`POST /api/chat/message`  
+**Query:** *"Where is the vulnerability in my authentication flow?"*  
+**Phoenix:** *"The identity logic at `auth.py:42` lacks salt... let me rewrite that for you."*
 
-### 💬 AI Chat
-`POST /api/chat/message` — Ask questions about your code (e.g., *"Where is the auth logic?"*)
+### ⚡ Semantic Retrieval
+Find code based on intent:
+`GET /api/embeddings/search?q="async database connection"`
 
 ---
 
-## 🧠 How it Works (Data Flow)
+## 🧠 System Architecture
 
 ```mermaid
 graph TD
-    A[User Request] -->|Gateway| B(API Gateway)
-    B --> C{Service Router}
-    C -->|Auth| D[Auth Service]
-    C -->|Repo| E[Repo Service]
-    C -->|AI| F[AI Service]
+    User((Developer)) -->|Trigger| Nexus[🛰️ Nexus Gateway]
+    Nexus --> Auth[🔐 The Embers]
+    Nexus --> Repo[🌀 The Vortex]
+    Nexus --> AI[🧠 The Cortex]
     
-    F -->|Analyze| G[(pgvector DB)]
-    F -->|Generate| H[Google Gemini API]
+    subgraph "The Neural Core"
+    AI --> pgv[(Vector Memory)]
+    AI --> Gemini[[Gemini Pro]]
+    end
     
-    E -->|Background Job| I[Redis Queue]
-    I --> F
+    Repo -->|Signal| Redis((Redis Pulse))
+    Redis --> AI
 ```
 
 ---
 
-## 📂 Project Structure
+## 📂 Internal Anatomy
 ```text
-gitpro/
+gitpro-phoenix/
 ├── services/
-│   ├── api-gateway/      # Entry point (Nginx/FastAPI)
-│   ├── auth-service/     # Identity & OAuth
-│   ├── repo-service/     # GitHub API Logic
-│   ├── ai-service/       # Vectorizing & Analysis
-│   ├── chat-service/     # Conversation Logic
-│   └── webhook-service/  # Event Listeners
-├── docker-compose.yml    # Full-stack orchestration
-└── .env.example          # Secrets template
+│   ├── api-gateway/      # Entry & Routing
+│   ├── auth-service/     # Identity & Security
+│   ├── repo-service/     # GitHub Streamer
+│   ├── ai-service/       # Neural Processing
+│   ├── chat-service/     # RAG & LLM Logic
+│   └── webhook-service/  # Event Monitor
+├── docker-compose.yml    # The Orchestrator
+└── .env.example          # Core Secrets
 ```
 
 ---
 
-## 🗺️ Roadmap
-- [x] **Phase 1:** Python Microservices MVP.
-- [x] **Phase 2:** Gemini AI & pgvector integration.
-- [x] **Phase 3:** Async background worker tasks via Redis.
-- [x] **Phase 4:** Next.js Cyberpunk Dashboard frontend.
-- [ ] **Phase 5:** Kubernetes Deployment (Helm Charts).
+## 🗺️ The Evolution Path
+
+- [x] **Genesis:** Microservice Mesh Architecture.
+- [x] **Ignition:** Gemini AI & Vector Memory integration.
+- [x] **Ascension:** Cyberpunk Dashboard with 3D code visualizations.
+- [ ] **Singularity:** Self-healing code generation & PR automation.
 
 ---
 
-## 🤝 Contributing
-Contributions are welcome! Please follow these steps:
-1. Fork the Project.
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`).
-4. Push to the Branch (`git push origin feature/AmazingFeature`).
-5. Open a Pull Request.
+## 🤝 Join the Rebirth
+We welcome all code-alchemists.
+1. **Fork** the repository.
+2. **Branch** into a new feature (`git checkout -b feature/PhoenixRise`).
+3. **Ignite** your changes and **Push**.
 
 ---
-**Built with 🐍 and 🤖 for the next generation of developers.**
+**Built with 🐍. Reborn through 🐦‍🔥. Destined for 🌌.**
