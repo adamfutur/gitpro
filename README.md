@@ -1,311 +1,149 @@
-# GitPro - AI-Powered GitHub Companion Platform
 
-A microservices-based AI platform for GitHub developers featuring code analysis, commit insights, security scanning, and repo-aware conversational AI.
+# ⚡ GitPro
+### **The AI-Powered GitHub Companion Platform**
 
-## Architecture
+[![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=for-the-badge&logo=go&logoColor=white)](https://go.dev/)
+[![Microservices](https://img.shields.io/badge/Architecture-Microservices-FF6600?style=for-the-badge)](https://microservices.io/)
+[![AI](https://img.shields.io/badge/AI-Google%20Gemini-blue?style=for-the-badge&logo=google-gemini)](https://deepmind.google/technologies/gemini/)
+[![Vector DB](https://img.shields.io/badge/Vector%20DB-pgvector-4169E1?style=for-the-badge&logo=postgresql)](https://github.com/pgvector/pgvector)
 
-GitPro uses a microservices architecture with the following services:
+**GitPro** is a high-performance microservices platform designed to revolutionize how developers interact with their codebases. By combining **LLMs**, **Vector Search**, and **GitHub Integration**, it provides deep insights, security scanning, and context-aware chat.
 
-- **API Gateway** (Port 8000) - Single entry point for all client requests
-- **Auth Service** (Port 8001) - GitHub OAuth and JWT management
-- **Repository Service** (Port 8002) - Repository metadata and GitHub API integration
-- **AI Service** (Port 8003) - Code analysis, embeddings generation, security scanning
-- **Chat Service** (Port 8004) - Repo-aware conversational AI
-- **Webhook Service** (Port 8005) - GitHub webhook event processing
+---
 
-## Tech Stack
+## 🏗️ System Architecture
 
-**Backend:**
-- Go 1.21
-- Fiber web framework
-- PostgreSQL with pgvector
-- Redis for job queuing
-- Google Gemini AI
+GitPro is built on a distributed microservices mesh. All traffic flows through the **Central Gateway** to specialized background workers.
 
-**Frontend (Future):**
-- Next.js 14
-- TypeScript
-- TailwindCSS
-- Futuristic cyberpunk UI
+```mermaid
+graph TD
+    User((Developer)) -->|Request| GW[API Gateway :8000]
+    GW --> Auth[Auth Service :8001]
+    GW --> Repo[Repo Service :8002]
+    GW --> AI[AI Analysis :8003]
+    GW --> Chat[Chat Service :8004]
+    GW --> Web[Webhook Service :8005]
+    
+    Repo --> Redis[(Redis Queue)]
+    AI --> Redis
+    
+    AI --> pgv[(Postgres + pgvector)]
+    Auth --> adb[(Auth DB)]
+```
 
-## Prerequisites
+---
 
-- Docker & Docker Compose
-- Go 1.21+ (for local development)
-- GitHub OAuth App credentials
-- Google Gemini API key
+## 🛠️ Tech Stack
 
-## Quick Start
+| Layer | Technology |
+| :--- | :--- |
+| **Backend** | Go 1.21 (Fiber Framework) |
+| **AI Engine** | Google Gemini Pro |
+| **Vector Search** | pgvector (PostgreSQL) |
+| **Task Queue** | Redis |
+| **Containerization** | Docker & Docker Compose |
+| **Frontend** | *Planned: Next.js 14 + Tailwind (Cyberpunk UI)* |
 
-### 1. Setup Environment Variables
+---
 
+## 🚀 Quick Start
+
+### 1. Environment Configuration
+Clone the repository and set up your environment:
 ```bash
 cp .env.example .env
 ```
+Update `.env` with your credentials:
+- `GITHUB_CLIENT_ID` / `SECRET` (from GitHub Developer Settings)
+- `GEMINI_API_KEY` (from Google AI Studio)
+- `JWT_SECRET` (Your secure signing key)
 
-Edit `.env` and add your credentials:
-- `GITHUB_CLIENT_ID` - From GitHub OAuth App
-- `GITHUB_CLIENT_SECRET` - From GitHub OAuth App
-- `GEMINI_API_KEY` - From Google AI Studio
-- `JWT_SECRET` - Random secret for JWT signing
-
-### 2. Start All Services
-
+### 2. Launch the Platform
+Bring up the entire ecosystem with a single command:
 ```bash
 docker-compose up --build
 ```
+*This spins up 6 microservices, 5 PostgreSQL instances, and Redis.*
 
-This will start:
-- All 5 databases (PostgreSQL + pgvector)
-- Redis
-- All 6 microservices
-- API Gateway on port 8000
-
-### 3. Verify Services
-
-Check health status:
+### 3. Verify Health
 ```bash
+# Check overall gateway health
 curl http://localhost:8000/health
 ```
 
-Individual service health checks:
-```bash
-curl http://localhost:8001/health  # Auth
-curl http://localhost:8002/health  # Repository
-curl http://localhost:8003/health  # AI
-curl http://localhost:8004/health  # Chat
-curl http://localhost:8005/health  # Webhook
-```
+---
 
-## API Endpoints
+## 🔌 API Reference
 
-All requests go through the API Gateway at `http://localhost:8000/api`
+### 🔐 Authentication
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/auth/github` | Initiate GitHub OAuth |
+| `GET` | `/api/auth/me` | Get current user profile |
+| `POST` | `/api/auth/logout` | Invalidate session |
 
-### Authentication
+### 📂 Repository & AI
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `GET` | `/api/repos` | List synced repositories |
+| `POST` | `/api/repos/:id/sync` | Force sync with GitHub |
+| `POST` | `/api/repos/:id/analyze` | Trigger AI code analysis |
+| `GET` | `/api/analysis/:id` | Retrieve security/quality report |
 
-```bash
-# Start GitHub OAuth flow
-GET /api/auth/github
+### 💬 Chat (Repo-Aware)
+| Method | Endpoint | Description |
+| :--- | :--- | :--- |
+| `POST` | `/api/chat/sessions` | Create a new AI chat context |
+| `POST` | `/api/chat/message` | Ask AI about your code |
 
-# OAuth callback (handled automatically)
-GET /api/auth/callback
+---
 
-# Get current user
-GET /api/auth/me
-Authorization: Bearer <jwt_token>
+## 🔄 Data Flow Logic
 
-# Logout
-POST /api/auth/logout
-```
+1.  **Ingestion:** User connects a repo. The `Repo Service` clones and metadata-indexes it.
+2.  **Processing:** `AI Service` reads the files, generates embeddings via Gemini, and stores them in `pgvector`.
+3.  **Intelligence:** When you ask a question, the `Chat Service` performs a **Similarity Search** in the vector DB to find relevant code snippets and sends them to Gemini for a context-aware answer.
+4.  **Real-time:** `Webhook Service` listens for new commits to automatically re-trigger analysis.
 
-### Repositories
+---
 
-```bash
-# List user repositories
-GET /api/repos?user_id=1
-Authorization: Bearer <jwt_token>
+## 📂 Project Structure
 
-# Get repository details
-GET /api/repos/:id
-
-# Sync repository from GitHub
-POST /api/repos/:id/sync
-X-GitHub-Token: <github_access_token>
-
-# Trigger AI analysis
-POST /api/repos/:id/analyze
-```
-
-### AI Analysis
-
-```bash
-# Get analysis results for repository
-GET /api/analysis/:repo_id
-
-# Search code embeddings
-GET /api/embeddings/search?q=authentication&repo_id=1
-```
-
-### Chat
-
-```bash
-# Create chat session
-POST /api/chat/sessions
-{
-  "user_id": 1,
-  "repo_id": 123,
-  "title": "Ask about authentication"
-}
-
-# Get chat history
-GET /api/chat/sessions/:id/messages
-
-# Send message
-POST /api/chat/message
-{
-  "session_id": 1,
-  "message": "How does authentication work in this repo?"
-}
-```
-
-### Webhooks
-
-```bash
-# GitHub webhook endpoint
-POST /api/webhooks/github
-X-Hub-Signature-256: <signature>
-X-GitHub-Event: <event_type>
-```
-
-## Database Schemas
-
-Each service has its own database:
-
-- **auth_db**: Users, sessions
-- **repos_db**: Repositories, commits, issues, pull requests
-- **ai_db**: Code embeddings (pgvector), analysis results, vulnerabilities
-- **chat_db**: Chat sessions, messages
-- **webhook_db**: Webhook events log
-
-## Development
-
-### Local Development (Without Docker)
-
-1. **Start databases:**
-```bash
-# Use Docker for databases only
-docker-compose up auth-db repos-db ai-db chat-db webhook-db redis
-```
-
-2. **Run services individually:**
-```bash
-cd services/auth-service && go run cmd/main.go
-cd services/repo-service && go run cmd/main.go
-cd services/ai-service && go run cmd/main.go
-cd services/chat-service && go run cmd/main.go
-cd services/webhook-service && go run cmd/main.go
-cd services/api-gateway && go run cmd/main.go
-```
-
-### Testing
-
-```bash
-# Test individual services
-cd services/auth-service && go test ./...
-cd services/repo-service && go test ./...
-```
-
-## Data Flow
-
-1. **User Authentication:**
-   - User clicks "Login with GitHub" → API Gateway → Auth Service
-   - OAuth flow completes → JWT token returned
-
-2. **Repository Analysis:**
-   - User triggers analysis → API Gateway → Repository Service
-   - Repo Service publishes job to Redis queue
-   - AI Service consumes job → Clones repo → Generates embeddings
-   - Performs code quality + security analysis → Stores in ai_db
-
-3. **Chat with AI:**
-   - User sends message → API Gateway → Chat Service
-   - Chat Service queries embeddings from ai_db for context
-   - Sends to Gemini with repo context → Returns AI response
-
-4. **Webhook Processing:**
-   - GitHub sends webhook → API Gateway → Webhook Service
-   - Signature verified → Event stored → Processing job queued
-
-## Deployment
-
-### Docker Compose (Production)
-
-```bash
-docker-compose -f docker-compose.prod.yml up -d
-```
-
-### Kubernetes
-
-Kubernetes manifests are available in `/k8s` directory:
-
-```bash
-kubectl apply -f k8s/
-```
-
-## GitHub OAuth Setup
-
-1. Go to GitHub Settings → Developer settings → OAuth Apps
-2. Create new OAuth App
-3. Set Authorization callback URL: `http://localhost:8001/callback`
-4. Copy Client ID and Client Secret to `.env`
-
-## Gemini API Setup
-
-1. Visit Google AI Studio: https://makersuite.google.com/app/apikey
-2. Create API key
-3. Add to `.env` as `GEMINI_API_KEY`
-
-## Project Structure
-
-```
+```text
 gitpro/
 ├── services/
-│   ├── api-gateway/
-│   ├── auth-service/
-│   ├── repo-service/
-│   ├── ai-service/
-│   ├── chat-service/
-│   └── webhook-service/
-├── docker-compose.yml
-├── .env.example
-└── README.md
+│   ├── api-gateway/      # Entry point & Routing
+│   ├── auth-service/     # OAuth & JWT
+│   ├── repo-service/     # GitHub API & Metadata
+│   ├── ai-service/       # Embeddings & Analysis
+│   ├── chat-service/     # RAG & Conversations
+│   └── webhook-service/  # Event Processing
+├── docker-compose.yml    # Full stack orchestration
+└── .env.example          # Template for secrets
 ```
 
-## Features
+---
 
-✅ **Implemented (Backend):**
-- Microservices architecture
-- GitHub OAuth authentication
-- Repository syncing from GitHub
-- AI-powered code analysis
-- Security vulnerability scanning
-- Code embeddings with pgvector
-- Repo-aware chat assistant
-- GitHub webhook processing
-- Background job queue with Redis
+## 🗺️ Roadmap
 
-🚧 **Next Phase (Frontend):**
-- Next.js 14 application
-- Futuristic cyberpunk UI
-- 3D code visualizations
-- Real-time dashboards
-- Interactive chat interface
+- [x] **Phase 1:** Core Microservices & Go-Fiber implementation.
+- [x] **Phase 2:** AI Integration (Gemini) & Vector Search.
+- [x] **Phase 3:** Frontend Launch (Next.js Cyberpunk Dashboard).
+- [ ] **Phase 4:** Distributed Tracing (Jaeger) & Service Mesh.
 
-## Troubleshooting
+---
 
-**Services not starting:**
-- Check Docker logs: `docker-compose logs <service_name>`
-- Verify environment variables in `.env`
+## 🤝 Contributing
+1. Fork the project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-**Database connection errors:**
-- Ensure databases are healthy: `docker-compose ps`
-- Check database URLs in service configs
+---
 
-**AI Service failing:**
-- Verify GEMINI_API_KEY is valid
-- Check API quotas in Google AI Studio
+## 📄 License
+Distributed under the **MIT License**. See `LICENSE` for more information.
 
-## Contributing
-
-This is a demonstration project. For production use, consider:
-- Implementing proper error handling
-- Adding comprehensive tests
-- Setting up CI/CD pipelines
-- Implementing service mesh (Istio/Linkerd)
-- Adding distributed tracing (Jaeger)
-- Implementing rate limiting
-- Adding caching layers
-
-## License
-
-MIT License - See LICENSE file for details
+---
+**Built with 💙 for the developer community.**
