@@ -1,0 +1,16 @@
+.gc-linechart {
+  display: block;
+  overflow: visible;
+}
+
+.gc-linechart-baseline {
+  stroke: var(--border-muted);
+  stroke-width: 1;
+}
+
+.gc-linechart-endlabel {
+  font-size: 13px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  dominant-baseline: middle;
+}

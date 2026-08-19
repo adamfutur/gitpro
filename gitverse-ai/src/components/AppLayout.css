@@ -1,0 +1,19 @@
+.gc-app {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background: var(--canvas-subtle);
+}
+
+.gc-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.gc-app-loading {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

@@ -1,0 +1,14 @@
+flask
+flask-cors
+flask-limiter
+gunicorn
+requests
+google-generativeai
+python-dotenv
+pyjwt
+radon
+nltk
+scikit-learn
+numpy
+joblib
+psycopg2-binary

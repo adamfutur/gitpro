@@ -1,0 +1,28 @@
+.gc-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.gc-tab {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg-muted);
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.gc-tab:hover {
+  color: var(--fg-default);
+  text-decoration: none;
+}
+
+.gc-tab.is-active {
+  color: var(--fg-default);
+  border-bottom-color: var(--accent-emphasis, #fd8c73);
+  border-bottom-color: #fd8c73;
+}

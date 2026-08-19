@@ -1,0 +1,63 @@
+.gc-header {
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  color: var(--header-fg);
+}
+
+.gc-header-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  height: 60px;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.gc-header-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--header-fg);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+
+.gc-header-brand:hover {
+  text-decoration: none;
+  opacity: 0.85;
+}
+
+.gc-header-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gc-header-avatar {
+  border-color: rgba(240, 246, 252, 0.2);
+}
+
+.gc-header-username {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--header-fg);
+}
+
+.gc-header-signout {
+  height: 28px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 500;
+  border-radius: var(--radius);
+  border: 1px solid rgba(240, 246, 252, 0.15);
+  background: rgba(240, 246, 252, 0.05);
+  color: var(--header-fg);
+  cursor: pointer;
+}
+
+.gc-header-signout:hover {
+  background: rgba(240, 246, 252, 0.12);
+}

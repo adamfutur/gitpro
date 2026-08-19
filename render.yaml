@@ -1,0 +1,56 @@
+# Render Blueprint — https://render.com/docs/blueprint-spec
+# Deploy: Render dashboard -> New -> Blueprint -> select this repo.
+# Secrets below (sync: false) are NOT stored here — Render will prompt for them once,
+# in its dashboard, after the blueprint is created.
+
+services:
+  - type: web
+    name: gitcat-backend
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --timeout 120 "app:create_app()"
+    plan: free
+    envVars:
+      - key: DB_TYPE
+        value: postgresql
+      - key: DB_HOST
+        fromDatabase:
+          name: gitcat-db
+          property: host
+      - key: DB_NAME
+        fromDatabase:
+          name: gitcat-db
+          property: database
+      - key: DB_USER
+        fromDatabase:
+          name: gitcat-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: gitcat-db
+          property: password
+      - key: DB_PORT
+        fromDatabase:
+          name: gitcat-db
+          property: port
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: GITHUB_WEBHOOK_SECRET
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: BACKEND_PUBLIC_URL
+        sync: false
+
+databases:
+  - name: gitcat-db
+    plan: free
+    databaseName: gitcat
+    user: gitcat_user

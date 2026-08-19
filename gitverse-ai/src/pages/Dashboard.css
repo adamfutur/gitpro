@@ -1,0 +1,38 @@
+.gc-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.gc-dashboard-header h1 {
+  font-size: 22px;
+}
+
+.gc-dashboard-search {
+  width: 280px;
+  max-width: 50vw;
+  height: 34px;
+  padding: 0 12px;
+  font-size: 14px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-default);
+  background: var(--canvas-default);
+  color: var(--fg-default);
+}
+
+.gc-dashboard-search:focus {
+  outline: 2px solid var(--accent-fg);
+  outline-offset: -1px;
+}
+
+.gc-dashboard-list {
+  padding: 4px 20px;
+}
+
+.gc-dashboard-loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}

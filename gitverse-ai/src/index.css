@@ -1,0 +1,398 @@
+:root {
+  --canvas-default: #ffffff;
+  --canvas-subtle: #f6f8fa;
+  --canvas-inset: #eaeef2;
+  --canvas-overlay: #ffffff;
+
+  --border-default: #d0d7de;
+  --border-muted: #d8dee4;
+
+  --fg-default: #1f2328;
+  --fg-muted: #59636e;
+  --fg-subtle: #6e7781;
+  --fg-on-emphasis: #ffffff;
+
+  --accent-fg: #0969da;
+  --accent-emphasis: #0969da;
+  --accent-subtle: #ddf4ff;
+
+  --success-fg: #1a7f37;
+  --success-emphasis: #1f883d;
+  --success-subtle: #dafbe1;
+
+  --attention-fg: #9a6700;
+  --attention-emphasis: #bf8700;
+  --attention-subtle: #fff8c5;
+
+  --danger-fg: #d1242f;
+  --danger-emphasis: #cf222e;
+  --danger-subtle: #ffebe9;
+
+  --done-fg: #8250df;
+  --done-emphasis: #8250df;
+  --done-subtle: #fbefff;
+
+  /* Fixed status scale for charts (good -> critical). Never themed, never reused for series identity. */
+  --status-good: #1f883d;
+  --status-warning: #9a6700;
+  --status-serious: #bc4c00;
+  --status-critical: #cf222e;
+
+  --header-bg: #0d1117;
+  --header-fg: #f0f6fc;
+  --header-fg-muted: #9198a1;
+  --header-border: rgba(240, 246, 252, 0.1);
+
+  --shadow-xs: 0 1px 0 rgba(31, 35, 40, 0.04);
+  --shadow-sm: 0 1px 2px rgba(31, 35, 40, 0.08);
+  --shadow-md: 0 3px 6px rgba(140, 149, 159, 0.15);
+
+  --radius: 6px;
+  --radius-lg: 12px;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial,
+    sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
+
+  color-scheme: light dark;
+  font: 14px/1.5 var(--font-sans);
+  color: var(--fg-default);
+  background: var(--canvas-subtle);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --canvas-default: #0d1117;
+    --canvas-subtle: #010409;
+    --canvas-inset: #010409;
+    --canvas-overlay: #161b22;
+
+    --border-default: #30363d;
+    --border-muted: #21262d;
+
+    --fg-default: #e6edf3;
+    --fg-muted: #848d97;
+    --fg-subtle: #6e7681;
+    --fg-on-emphasis: #ffffff;
+
+    --accent-fg: #4493f8;
+    --accent-emphasis: #1f6feb;
+    --accent-subtle: rgba(56, 139, 253, 0.15);
+
+    --success-fg: #3fb950;
+    --success-emphasis: #238636;
+    --success-subtle: rgba(46, 160, 67, 0.15);
+
+    --attention-fg: #d29922;
+    --attention-emphasis: #9e6a03;
+    --attention-subtle: rgba(187, 128, 9, 0.15);
+
+    --danger-fg: #f85149;
+    --danger-emphasis: #da3633;
+    --danger-subtle: rgba(248, 81, 73, 0.15);
+
+    --done-fg: #ab7df8;
+    --done-emphasis: #8957e5;
+    --done-subtle: rgba(163, 113, 247, 0.15);
+
+    --status-good: #238636;
+    --status-warning: #d29922;
+    --status-serious: #c1611a;
+    --status-critical: #da3633;
+
+    --header-bg: #010409;
+    --header-fg: #f0f6fc;
+    --header-fg-muted: #9198a1;
+    --header-border: rgba(240, 246, 252, 0.1);
+
+    --shadow-xs: 0 1px 0 rgba(1, 4, 9, 0.15);
+    --shadow-sm: 0 1px 2px rgba(1, 4, 9, 0.3);
+    --shadow-md: 0 3px 6px rgba(1, 4, 9, 0.4);
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+#root {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
+
+body {
+  background: var(--canvas-subtle);
+  color: var(--fg-default);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  color: var(--fg-default);
+  margin: 0;
+}
+
+p {
+  margin: 0;
+}
+
+a {
+  color: var(--accent-fg);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+code,
+pre {
+  font-family: var(--font-mono);
+}
+
+code {
+  font-size: 85%;
+  padding: 0.2em 0.4em;
+  border-radius: var(--radius);
+  background: var(--canvas-inset);
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--accent-subtle);
+}
+
+/* Shared building blocks */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 32px;
+  padding: 0 16px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-default);
+  background: var(--canvas-default);
+  color: var(--fg-default);
+  cursor: pointer;
+  box-shadow: var(--shadow-xs);
+  transition: background-color 80ms ease-out, border-color 80ms ease-out;
+}
+
+.btn:hover {
+  background: var(--canvas-inset);
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--success-emphasis);
+  border-color: rgba(31, 35, 40, 0.15);
+  color: var(--fg-on-emphasis);
+}
+
+.btn-primary:hover {
+  background: var(--success-fg);
+}
+
+.card {
+  background: var(--canvas-default);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+}
+
+.avatar {
+  border-radius: 50%;
+  display: block;
+  border: 1px solid var(--border-muted);
+  background: var(--canvas-inset);
+}
+
+.gc-page {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  flex: 1;
+}
+
+/* Rendered markdown (AI review text) — shared by the Analysis and PR review tabs */
+
+.gc-markdown {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--fg-default);
+  overflow-wrap: break-word;
+}
+
+.gc-markdown > *:first-child {
+  margin-top: 0;
+}
+
+.gc-markdown h1,
+.gc-markdown h2,
+.gc-markdown h3,
+.gc-markdown h4 {
+  margin: 24px 0 10px;
+  line-height: 1.35;
+}
+
+.gc-markdown h1 {
+  font-size: 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.gc-markdown h2 {
+  font-size: 17px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.gc-markdown h3 {
+  font-size: 15px;
+}
+
+.gc-markdown h4 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--fg-muted);
+}
+
+.gc-markdown p,
+.gc-markdown ul,
+.gc-markdown ol,
+.gc-markdown blockquote {
+  margin: 0 0 12px;
+}
+
+.gc-markdown ul,
+.gc-markdown ol {
+  padding-left: 22px;
+}
+
+.gc-markdown li {
+  margin: 4px 0;
+}
+
+.gc-markdown li > ul,
+.gc-markdown li > ol {
+  margin-top: 4px;
+  margin-bottom: 0;
+}
+
+.gc-markdown strong {
+  font-weight: 600;
+  color: var(--fg-default);
+}
+
+.gc-markdown a {
+  color: var(--accent-fg);
+}
+
+.gc-markdown hr {
+  border: none;
+  border-top: 1px solid var(--border-muted);
+  margin: 20px 0;
+}
+
+.gc-markdown blockquote {
+  padding: 4px 14px;
+  border-left: 3px solid var(--border-default);
+  color: var(--fg-muted);
+}
+
+.gc-markdown code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--canvas-inset);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+
+.gc-markdown pre {
+  background: var(--canvas-inset);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  overflow-x: auto;
+  margin: 0 0 14px;
+}
+
+.gc-markdown pre code {
+  background: none;
+  padding: 0;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.gc-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 14px;
+  font-size: 12px;
+  display: block;
+  overflow-x: auto;
+}
+
+.gc-markdown th,
+.gc-markdown td {
+  border: 1px solid var(--border-muted);
+  padding: 6px 10px;
+  text-align: left;
+}
+
+.gc-markdown th {
+  background: var(--canvas-inset);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Decorative background layers — shared by any full-bleed marketing-style page (Login, ShareCard) */
+
+.gc-login-grid {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(var(--border-default) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: radial-gradient(ellipse 900px 500px at 50% 0%, #000 0%, transparent 75%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.gc-login-glow {
+  position: absolute;
+  inset: -20% -10% auto -10%;
+  height: 640px;
+  background:
+    radial-gradient(480px 320px at 15% 0%, color-mix(in srgb, var(--accent-fg) 18%, transparent), transparent 70%),
+    radial-gradient(420px 300px at 90% 15%, color-mix(in srgb, var(--status-good) 16%, transparent), transparent 70%);
+  pointer-events: none;
+}

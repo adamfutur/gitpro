@@ -1,0 +1,81 @@
+.gc-barchart-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gc-barchart-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 160px) 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 6px;
+  margin: 0 -6px;
+  border-radius: var(--radius);
+  outline: none;
+}
+
+.gc-barchart-row:hover,
+.gc-barchart-row:focus-visible {
+  background: var(--canvas-inset);
+}
+
+.gc-barchart-row:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent-fg) inset;
+}
+
+.gc-barchart-label {
+  font-size: 12px;
+  color: var(--fg-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-mono);
+}
+
+.gc-barchart-track {
+  position: relative;
+  height: 24px;
+  display: flex;
+  align-items: center;
+}
+
+.gc-barchart-fill {
+  height: 20px;
+  min-width: 3px;
+  border-radius: 0 4px 4px 0;
+  transition: width 200ms ease-out;
+}
+
+.gc-barchart-value {
+  font-size: 12px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--fg-default);
+  min-width: 2.5ch;
+  text-align: right;
+}
+
+.gc-barchart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-muted);
+}
+
+.gc-barchart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--fg-muted);
+}
+
+.gc-barchart-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}

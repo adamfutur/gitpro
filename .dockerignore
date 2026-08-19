@@ -1,0 +1,39 @@
+# Git
+.git
+.gitignore
+
+# Environment
+.env
+.env.local
+
+# Build artifacts
+*/target
+*/dist
+*/build
+*/.next
+
+# Dependencies
+*/node_modules
+*/vendor
+
+# IDEs
+.vscode
+.idea
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite
+
+# Temporary files
+tmp/
+temp/
+*.tmp

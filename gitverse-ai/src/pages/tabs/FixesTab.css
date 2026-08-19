@@ -1,0 +1,115 @@
+.gc-fixes-intro {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.gc-fixes-title {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.gc-fixes-desc {
+  font-size: 12px;
+  color: var(--fg-muted);
+  max-width: 560px;
+}
+
+.gc-fixes-error {
+  color: var(--danger-fg);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.gc-fixes-progress {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.gc-fixes-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.gc-fix-card {
+  padding: 16px 20px;
+}
+
+.gc-fix-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.gc-fix-header input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent-fg);
+  cursor: pointer;
+}
+
+.gc-fix-file {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.gc-fix-desc {
+  margin: 8px 0 12px;
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.gc-diff {
+  margin: 0;
+  padding: 10px 0;
+  background: var(--canvas-inset);
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.gc-diff > div {
+  padding: 0 12px;
+  white-space: pre;
+}
+
+.gc-diff-add {
+  background: color-mix(in srgb, var(--status-good) 12%, transparent);
+  color: var(--fg-default);
+}
+
+.gc-diff-del {
+  background: color-mix(in srgb, var(--status-critical) 12%, transparent);
+  color: var(--fg-default);
+}
+
+.gc-diff-hunk {
+  color: var(--accent-fg);
+}
+
+.gc-diff-file {
+  color: var(--fg-muted);
+}
+
+.gc-diff-ctx {
+  color: var(--fg-muted);
+}
+
+.gc-fixes-apply {
+  padding: 16px 20px;
+}
+
+.gc-fixes-success {
+  font-size: 13px;
+}

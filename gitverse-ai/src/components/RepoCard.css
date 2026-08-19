@@ -1,0 +1,61 @@
+.gc-repo-card {
+  padding: 16px 0;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.gc-repo-card:last-child {
+  border-bottom: none;
+}
+
+.gc-repo-card-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gc-repo-card-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--accent-fg);
+}
+
+.gc-repo-card-badge {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0 7px;
+  height: 18px;
+  line-height: 18px;
+  border-radius: 999px;
+  border: 1px solid var(--border-default);
+  color: var(--fg-muted);
+}
+
+.gc-repo-card-desc {
+  margin-top: 6px;
+  color: var(--fg-muted);
+  font-size: 13px;
+  max-width: 720px;
+}
+
+.gc-repo-card-meta {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  color: var(--fg-muted);
+  font-size: 12px;
+}
+
+.gc-repo-card-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.gc-lang-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}

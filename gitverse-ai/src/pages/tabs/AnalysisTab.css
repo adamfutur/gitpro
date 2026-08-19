@@ -1,0 +1,274 @@
+.gc-analysis-loading {
+  display: flex;
+  justify-content: center;
+  padding: 48px 0;
+}
+
+.gc-analysis-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.gc-analysis-generated {
+  font-size: 12px;
+  color: var(--fg-subtle);
+}
+
+.gc-analysis-error {
+  color: var(--danger-fg);
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+
+.gc-analysis-progress {
+  padding: 24px;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+/* Trend chart */
+
+.gc-trend-card {
+  padding: 18px 20px 14px;
+  margin-bottom: 16px;
+}
+
+.gc-trend-card h3 {
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.gc-trend-caption {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  color: var(--fg-subtle);
+}
+
+/* Share toggle */
+
+.gc-share-toggle {
+  padding: 14px 20px;
+  margin-bottom: 16px;
+}
+
+.gc-share-toggle-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.gc-share-toggle-title {
+  font-size: 13px;
+  margin-bottom: 3px;
+}
+
+.gc-share-toggle-desc {
+  font-size: 12px;
+  color: var(--fg-muted);
+  max-width: 440px;
+}
+
+.gc-share-toggle-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-muted);
+}
+
+.gc-share-toggle-link code {
+  flex: 1;
+  font-size: 12px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Summary */
+
+.gc-summary-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.gc-grade {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+  flex-shrink: 0;
+  color: var(--fg-on-emphasis);
+  background: var(--fg-muted);
+}
+
+.gc-grade-A {
+  background: var(--success-emphasis);
+}
+.gc-grade-B {
+  background: #2da44e;
+}
+.gc-grade-C {
+  background: var(--attention-emphasis);
+}
+.gc-grade-D {
+  background: #d1852c;
+}
+.gc-grade-F {
+  background: var(--danger-emphasis);
+}
+
+.gc-summary-score {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.gc-summary-label {
+  font-size: 12px;
+  color: var(--fg-muted);
+  margin-top: 2px;
+}
+
+/* Charts */
+
+.gc-chart-card {
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.gc-chart-card h3 {
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+/* KPI grid */
+
+.gc-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.gc-kpi-card {
+  padding: 16px 20px;
+}
+
+.gc-kpi-card h4 {
+  font-size: 13px;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 10px;
+}
+
+.gc-kpi-card dl {
+  margin: 0;
+}
+
+.gc-kpi-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  font-size: 13px;
+}
+
+.gc-kpi-row dt {
+  color: var(--fg-muted);
+}
+
+.gc-kpi-row dd {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* AI write-up */
+
+.gc-analysis-writeup {
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+
+.gc-analysis-writeup h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+
+/* Anomalies */
+
+.gc-anomalies {
+  padding: 20px 24px;
+}
+
+.gc-anomalies h3 {
+  font-size: 14px;
+  margin-bottom: 12px;
+}
+
+.gc-anomalies-empty {
+  font-size: 13px;
+  color: var(--fg-muted);
+}
+
+.gc-anomaly-list {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gc-anomaly-item {
+  border: 1px solid var(--border-muted);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.gc-anomaly-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.gc-anomaly-score {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--danger-fg);
+}
+
+.gc-anomaly-types {
+  margin-top: 6px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.gc-anomaly-type {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--attention-subtle);
+  color: var(--attention-fg);
+}
+
+.gc-anomaly-desc {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--fg-muted);
+}

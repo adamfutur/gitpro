@@ -1,0 +1,16 @@
+.gc-callback {
+  flex: 1;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.gc-callback-error {
+  color: var(--danger-fg);
+  font-size: 14px;
+  max-width: 360px;
+  text-align: center;
+}
