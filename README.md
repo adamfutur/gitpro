@@ -41,6 +41,14 @@ the commit history, or open PRs to figure out the answer, instead of hallucinati
 🔗 **Shows off the good stuff, publicly** — flip on a share link and anyone gets a clean, read-only health
 card for the repo. No source, no login, just the badge-worthy numbers.
 
+🖥️ **Works from the terminal too** — the new Textual-powered TUI gives you a full interactive GitHub
+workspace without opening the web dashboard. Browse repositories, run analysis, inspect pull requests,
+generate architecture diagrams, run auto-fix scans, and chat with your codebase.
+
+🤖 **Exposes gitcat through MCP** — the MCP server makes gitcat's repository intelligence available as
+MCP tools over stdio. AI clients that support MCP can use the same GitHub-aware capabilities for repository
+analysis, PR reviews, auto-fixes, diagrams, and codebase chat.
+
 ## See it in action
 
 Real screenshots, running locally against a real repo — no mockups.
@@ -66,55 +74,196 @@ Real screenshots, running locally against a real repo — no mockups.
 
 ## How it's built
 
-A Flask API (`backend/`) and a React + TypeScript + Vite frontend (`gitverse-ai/`) — two moving parts, not
-twelve. Longer jobs (analysis, review, fix-scanning, diagramming) run in the background and get polled for
-status, so the UI never just sits there spinning.
+A Flask API (`backend/`) and a React + TypeScript + Vite frontend (`gitverse-ai/`) — with a terminal
+interface and MCP server layered on top.
+
+Longer jobs (analysis, review, fix-scanning, diagramming) run in the background and get polled for
+status, so the web UI never just sits there spinning.
 
 ```
-backend/            Flask app, one blueprint per feature (auth, repos, pulls,
-                     webhooks, fixes, diagrams, chat, dashboard, share)
-gitverse-ai/         React app: login → repo dashboard → per-repo tabs
+backend/
+├── Flask API
+├── services/          GitHub, AI, analysis, review, auto-fix, diagrams, etc.
+├── tui/               Textual terminal interface
+│   ├── app.py         TUI application
+│   ├── core.py        Shared GitHub/application state
+│   ├── commands.py    Command palette
+│   └── screens/       Repo, analysis, PR, auto-fix, diagram and chat screens
+├── mcp_server.py      MCP server (stdio transport)
+└── run_tui.bat        Windows TUI launcher
+
+gitverse-ai/            React + TypeScript + Vite frontend
 ```
 
-SQLite locally, Postgres in Docker/production. GitHub OAuth for identity, a GitHub webhook for the
-auto-review loop, an LLM for everything that requires actually reading code.
+SQLite locally, Postgres in Docker/production. GitHub OAuth handles web authentication, while the TUI
+and MCP server can authenticate directly with a GitHub token. Gemini powers the features that require
+actually reading and reasoning about code.
 
 ## Running it
 
-**Backend**
+### Backend
+
 ```bash
 cd backend
 pip install -r requirements.txt
 python app.py                    # http://localhost:3000
 ```
 
-**Frontend**
+### Frontend
+
 ```bash
 cd gitverse-ai
 npm install
 npm run dev                      # http://localhost:5190
 ```
 
-**Environment** — copy `.env.example` to `.env` at the repo root:
+### Terminal UI
+
+The terminal UI is built with [Textual](https://textual.textualize.io/) and provides an interactive
+GitHub workspace directly from your terminal.
+
+The TUI requires:
+
+- `GITHUB_TOKEN` (or `GITHUB_ACCESS_TOKEN`)
+- `GEMINI_API_KEY`
+
+From the repository root:
+
+```bash
+python backend/tui/main.py
+```
+
+Or, on Windows, use the included launcher:
+
+```bat
+backend\run_tui.bat
+```
+
+The TUI validates your GitHub token before starting and then opens the repository browser.
+
+Available areas include:
+
+- **Repositories** — browse repositories accessible to your GitHub token
+- **Analysis** — run AI-powered repository health analysis
+- **Pull Requests** — inspect repository pull requests
+- **Auto-Fix** — scan for automatically fixable issues and create a fix PR
+- **Architecture Diagram** — generate a Mermaid architecture diagram
+- **Chat** — ask questions about the repository using grounded GitHub context
+
+The command palette is available with:
+
+```text
+Ctrl+P
+```
+
+and the application can be exited with:
+
+```text
+Ctrl+Q
+```
+
+### MCP server
+
+gitcat also exposes its repository intelligence through the
+[Model Context Protocol (MCP)](https://modelcontextprotocol.io/).
+
+The server uses **stdio transport**, so it can be launched by an MCP-compatible client as a local
+process.
+
+The MCP server requires:
+
+```text
+GITHUB_TOKEN
+GEMINI_API_KEY
+```
+
+Start it directly with:
+
+```bash
+cd backend
+python mcp_server.py
+```
+
+The server exposes tools for:
+
+- Listing accessible GitHub repositories
+- Repository health analysis
+- Listing pull requests
+- AI-powered pull request reviews
+- Auto-fix scanning
+- Applying auto-fixes by opening a pull request
+- Generating Mermaid architecture diagrams
+- Chatting with a repository using GitHub-backed context
+
+For example, the server can be started with environment variables set in the shell:
+
+```bash
+GITHUB_TOKEN=ghp_... GEMINI_API_KEY=AIza... python backend/mcp_server.py
+```
+
+On Windows PowerShell:
+
+```powershell
+$env:GITHUB_TOKEN="ghp_..."
+$env:GEMINI_API_KEY="AIza..."
+python backend\mcp_server.py
+```
+
+The MCP server reads `GITHUB_TOKEN` when it starts and uses that token for GitHub operations.
+
+> **MCP client configuration:** configure your MCP-compatible client to launch
+> `backend/mcp_server.py` with the required environment variables. The exact configuration format
+> depends on the client you use.
+
+## Environment
+
+Copy `.env.example` to `.env` at the repository root:
 
 | Variable | Unlocks |
 | --- | --- |
-| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | Signing in with GitHub |
+| `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET` | Signing in with GitHub through the web app |
+| `GITHUB_TOKEN` | TUI and MCP GitHub access |
+| `GITHUB_ACCESS_TOKEN` | Alternative token name accepted by the TUI |
 | `GEMINI_API_KEY` | Analysis, chat, PR review, auto-fix, diagrams |
-| `JWT_SECRET` | Session tokens |
+| `JWT_SECRET` | Web session tokens |
 | `FRONTEND_URL` | OAuth redirect + CORS |
 | `GITHUB_WEBHOOK_SECRET`, `BACKEND_PUBLIC_URL` | The auto-review webhook (needs a public URL — `ngrok` works for local dev) |
 
 The frontend needs its own `VITE_API_URL` pointing at wherever the backend is running.
 
-**Docker**
+### GitHub token
+
+The TUI and MCP server use a GitHub personal access token rather than the browser OAuth flow.
+
+Set it in your environment:
+
+```bash
+export GITHUB_TOKEN=ghp_...
+```
+
+Or put it in the root `.env` file:
+
+```env
+GITHUB_TOKEN=ghp_...
+GEMINI_API_KEY=AIza...
+```
+
+Keep tokens out of source control.
+
+## Docker
+
 ```bash
 cd backend
 docker-compose up --build
 ```
 
-**Deploying** — `render.yaml` at the repo root is a [Render Blueprint](https://render.com/docs/blueprint-spec):
-a Flask web service plus a managed Postgres instance. Render dashboard → New → Blueprint → pick this repo.
+## Deploying
+
+`render.yaml` at the repo root is a
+[Render Blueprint](https://render.com/docs/blueprint-spec):
+a Flask web service plus a managed Postgres instance.
+
+Render dashboard → New → Blueprint → pick this repo.
 
 ---
 
