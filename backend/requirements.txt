@@ -12,3 +12,7 @@ scikit-learn
 numpy
 joblib
 psycopg2-binary
+# TUI
+textual>=0.80.0
+# MCP server
+mcp>=1.0.0
