@@ -20,7 +20,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Test risk scoring
-        run: python -m unittest test_pr_risk -v
+        run: python -m unittest test_pr_risk test_change_impact -v
 
   frontend-build:
     runs-on: ubuntu-latest
