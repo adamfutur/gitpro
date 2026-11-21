@@ -15,7 +15,7 @@ FIX_PROMPT_INSTRUCTIONS = """You are a careful, conservative code-fixing assista
 source files from a repository. For each file, decide if it has a SAFE, MECHANICAL issue you can fix with
 total confidence, from ONLY these categories:
 - Hardcoded absolute local file paths (e.g. C:\\Users\\... or /home/...) that should be relative or config-driven
-- Unsafe deserialization: pickle.load/pickle.loads used to load model/data files, which should use joblib instead
+- Missing or unused imports that can be removed without changing behavior
 - Missing obvious type hints on function signatures (only add hints, never change logic)
 - Clearly dead/duplicate imports
 
@@ -42,10 +42,14 @@ def scan_for_fixes(github_token, repo_id, on_stage=None):
     branch = repo.get('default_branch', 'main')
 
     stage('Walking the repository tree...')
-    files = fetch_repo_tree_recursive(github_token, owner, repo_name, max_files=MAX_CANDIDATE_FILES, branch=branch)
+    files = [f for f in fetch_repo_tree_recursive(github_token, owner, repo_name, max_files=MAX_CANDIDATE_FILES, branch=branch)\n             if not f.get('truncated')]
 
+    base = get_branch(github_token, owner, repo_name, branch)
+    if not base:
+        raise ValueError('Unable to read base branch')
+    base_sha = base['commit']['sha']
     if not files:
-        return {'repo_id': repo_id, 'branch': branch, 'fixes': []}
+        return {'repo_id': repo_id, 'branch': branch, 'base_sha': base_sha, 'fixes': []}
 
     stage(f'Scanning {len(files)} files for safe fixes...')
     prompt = FIX_PROMPT_INSTRUCTIONS + "\n\n=== FILES ===\n"
@@ -75,7 +79,7 @@ def scan_for_fixes(github_token, repo_id, on_stage=None):
             'new_content': new_content,
         })
 
-    return {'repo_id': repo_id, 'branch': branch, 'fixes': fixes}
+    return {'repo_id': repo_id, 'branch': branch, 'base_sha': base_sha, 'fixes': fixes}
 
 def _parse_fixes(raw_text):
     text = raw_text.strip()
@@ -91,7 +95,7 @@ def _parse_fixes(raw_text):
         print(f"Failed to parse fix-scan response: {e}")
         return []
 
-def create_fix_pr(github_token, repo_id, base_branch, selected_fixes):
+def create_fix_pr(github_token, repo_id, base_branch, selected_fixes, expected_base_sha=None):
     """
     Creates a new branch off base_branch, commits each selected fix's new_content, and
     opens a PR back into base_branch. selected_fixes: [{file, description, new_content}].
@@ -108,6 +112,9 @@ def create_fix_pr(github_token, repo_id, base_branch, selected_fixes):
     if not base:
         raise ValueError(f'Could not read base branch "{base_branch}"')
     base_sha = base['commit']['sha']
+
+    if not expected_base_sha or base_sha != expected_base_sha:
+        raise ValueError('Repository branch changed since the scan. Run a fresh scan.')
 
     new_branch = f"gitcat/auto-fix-{int(time.time())}"
     if not create_branch(github_token, owner, repo_name, new_branch, base_sha):
