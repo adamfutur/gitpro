@@ -196,7 +196,7 @@ export interface PrFileChange {
 }
 
 export interface PrVerdict {
-  status: 'pass' | 'fail'
+  status: 'pass' | 'fail' | 'inconclusive'
   reason: string
 }
 
