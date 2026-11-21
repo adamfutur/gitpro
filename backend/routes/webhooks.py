@@ -37,10 +37,10 @@ def _run_auto_review(repo_id, pr_number, github_user_id, github_token, owner, re
                   f"Posted automatically by [gitcat](https://github.com/{owner}/{repo_name}) — not a human reviewer.*"
         post_pr_comment(github_token, owner, repo_name, pr_number, comment)
 
-        verdict = result.get('verdict', {'status': 'pass', 'reason': 'No blocking issues identified.'})
+        verdict = result.get('verdict', {'status': 'inconclusive', 'reason': 'No verdict available.'})
         create_commit_status(
             github_token, owner, repo_name, result.get('head_sha', head_sha),
-            state='success' if verdict['status'] == 'pass' else 'failure',
+            state='success' if verdict['status'] == 'pass' else ('failure' if verdict['status'] == 'fail' else 'error'),
             description=verdict['reason'] or 'Review complete.',
             context=STATUS_CONTEXT,
             target_url=result.get('html_url'),
