@@ -4,6 +4,8 @@ import re
 from services.github_service import get_repo_details, get_pr_details, get_pr_files
 from services.gemini_service import call_gemini
 from services.pr_risk import analyze_pr_risk
+from services.change_impact import build_change_impact_graph
+from services.repo_reader import fetch_repo_tree_recursive
 
 MAX_REVIEWED_FILES = 20
 MAX_PATCH_CHARS = 3000
@@ -99,6 +101,19 @@ bugs that would break functionality, or severe regressions. Use "pass" for every
 including files with only minor style suggestions or nitpicks.
 """
 
+    stage('Mapping change impact...')
+    # Read a bounded sample at the PR head, not an unrelated default-branch snapshot.
+    # GitHub may not expose fork commits through the base repository; graph then stays partial.
+    try:
+        sampled_files = fetch_repo_tree_recursive(
+            github_token, owner, repo_name, max_files=80,
+            branch=pr['head']['sha'],
+            priority_paths=[f['filename'] for f in files],
+        )
+    except Exception:
+        sampled_files = []
+    impact_graph = build_change_impact_graph(files, sampled_files)
+
     stage('Generating AI review with Gemini...')
     raw_review = call_gemini(prompt)
     review, verdict = _extract_verdict(raw_review)
@@ -114,6 +129,7 @@ including files with only minor style suggestions or nitpicks.
         'additions': total_additions,
         'deletions': total_deletions,
         'risk_radar': analyze_pr_risk(files, MAX_REVIEWED_FILES, MAX_PATCH_CHARS),
+        'impact_graph': impact_graph,
         'files': [{
             'filename': f['filename'],
             'status': f['status'],
