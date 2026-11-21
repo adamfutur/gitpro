@@ -1,40 +1,13 @@
 import datetime
-import json
-import re
 from services.github_service import get_repo_details, get_pr_details, get_pr_files
 from services.gemini_service import call_gemini
 from services.pr_risk import analyze_pr_risk
 from services.change_impact import build_change_impact_graph
+from services.review_verdict import extract_verdict as _extract_verdict
 from services.repo_reader import fetch_repo_tree_recursive
 
 MAX_REVIEWED_FILES = 20
 MAX_PATCH_CHARS = 3000
-
-VERDICT_BLOCK_RE = re.compile(r"```gitcat-verdict\s*(\{.*?\})\s*```", re.DOTALL)
-
-DEFAULT_VERDICT = {'status': 'inconclusive', 'reason': 'Review verdict unavailable; manual review required.'}
-
-def _extract_verdict(review_text):
-    """
-    Pulls the trailing ```gitcat-verdict fenced JSON block out of the review text (so it
-    isn't shown as raw JSON to the reader) and returns (clean_review_text, verdict_dict).
-    Falls back to an inconclusive verdict when parsing fails; never mark an
-    unverified AI review as passed.
-    """
-    match = VERDICT_BLOCK_RE.search(review_text)
-    if not match:
-        return review_text.strip(), dict(DEFAULT_VERDICT)
-
-    clean_text = (review_text[:match.start()] + review_text[match.end():]).strip()
-    try:
-        verdict = json.loads(match.group(1))
-        status = verdict.get('status')
-        if status not in ('pass', 'fail'):
-            return clean_text, dict(DEFAULT_VERDICT)
-        return clean_text, {'status': status, 'reason': verdict.get('reason', '')[:300]}
-    except Exception as e:
-        print(f"Failed to parse gitcat-verdict block: {e}")
-        return clean_text, dict(DEFAULT_VERDICT)
 
 def build_pr_review(github_token, repo_id, pr_number, on_stage=None):
     """
