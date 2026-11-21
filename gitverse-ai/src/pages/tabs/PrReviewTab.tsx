@@ -123,11 +123,12 @@ export default function PrReviewTab() {
 
 function VerdictBanner({ verdict }: { verdict: PrVerdict }) {
   const pass = verdict.status === 'pass'
+  const inconclusive = verdict.status === 'inconclusive'
   return (
-    <div className={`card gc-pr-verdict ${pass ? 'is-pass' : 'is-fail'}`}>
+    <div className={`card gc-pr-verdict ${pass ? 'is-pass' : inconclusive ? 'is-inconclusive' : 'is-fail'}`}>
       {pass ? <CheckIcon /> : <XIcon />}
       <div>
-        <div className="gc-pr-verdict-status">{pass ? 'Passes gitcat checks' : 'Blocked by gitcat checks'}</div>
+        <div className="gc-pr-verdict-status">{pass ? 'Passes gitcat checks' : inconclusive ? 'Review inconclusive — manual review required' : 'Blocked by gitcat checks'}</div>
         <div className="gc-pr-verdict-reason">{verdict.reason}</div>
       </div>
     </div>
