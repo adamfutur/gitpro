@@ -87,6 +87,19 @@ cd backend
 python -m unittest test_pr_risk -v
 ```
 
+## Change Impact Graph + safer review workflows
+
+The PR review page now includes a **Change Impact Graph** next to PR Risk Radar. It finds direct static imports among a bounded snapshot (up to 80 eligible source files) at the PR head SHA and visualizes impacted source modules. Click a node to see which sampled files import it and what it imports. **It is not a complete dependency graph:** dynamic imports, runtime effects, files outside the sample, and fork commits the API cannot read may be missing. The graph clearly reports partial coverage.
+
+Security improvements in this release:
+- GitHub OAuth authorization now uses a random state value checked against an HttpOnly Lax cookie on callback, expiring in ten minutes. For TLS deployments behind a reverse proxy, set `OAUTH_COOKIE_SECURE=true`.
+- Unparseable AI verdicts become **inconclusive**, creating an error status rather than automatically passing branch protection.
+- Auto-fix apply accepts only file paths and the scan job ID; the server retrieves the exact proposals from the recent scan, checks user/repository ownership and base commit, and consumes the scan when applying.
+- Truncated files are excluded from auto-fix scans; the misleading suggestion to replace unsafe pickle deserialization with joblib has been removed.
+- PR file changes are paginated rather than silently limited to the first 100 items.
+
+**Remaining hardening work:** Browser sessions still use URL-delivered JWTs and localStorage. Migrate to HttpOnly session cookies with CSRF protection, encrypt persisted GitHub tokens, and move in-memory jobs to a durable queue before treating the service as production-hardened.
+
 ## How it's built
 
 A Flask API (`backend/`) and a React + TypeScript + Vite frontend (`gitverse-ai/`) — with a terminal
