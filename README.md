@@ -72,6 +72,21 @@ Real screenshots, running locally against a real repo — no mockups.
 </tr>
 </table>
 
+## PR Risk Radar (new)
+
+Every on-demand AI PR review now includes an **explainable Risk Radar**. It scores changed files for *review priority* using path sensitivity, change size, rename/deletion signals, and test-file context. It ranks the top eight files and produces a short before-merge checklist.
+
+The panel also makes AI review limits visible: selected files, available diff patches, truncated patches and files omitted from the review. Reports can be copied for release notes, handoffs, or a shareable demo.
+
+**Important:** This is a deterministic heuristic, **not** a defect probability, a security scan, a claim that tests are absent, or permission to merge. Its score is separate from the Gemini verdict; a low score cannot certify safety. No extra Gemini calls or external telemetry are involved.
+
+Run the isolated regression suite with:
+
+```bash
+cd backend
+python -m unittest test_pr_risk -v
+```
+
 ## How it's built
 
 A Flask API (`backend/`) and a React + TypeScript + Vite frontend (`gitverse-ai/`) — with a terminal
