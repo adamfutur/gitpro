@@ -10,14 +10,14 @@ MAX_PATCH_CHARS = 3000
 
 VERDICT_BLOCK_RE = re.compile(r"```gitcat-verdict\s*(\{.*?\})\s*```", re.DOTALL)
 
-DEFAULT_VERDICT = {'status': 'pass', 'reason': 'No blocking issues identified.'}
+DEFAULT_VERDICT = {'status': 'inconclusive', 'reason': 'Review verdict unavailable; manual review required.'}
 
 def _extract_verdict(review_text):
     """
     Pulls the trailing ```gitcat-verdict fenced JSON block out of the review text (so it
     isn't shown as raw JSON to the reader) and returns (clean_review_text, verdict_dict).
-    Falls back to a "pass" verdict if the block is missing or malformed — a parsing bug
-    should never silently block someone's PR (fail-open, not fail-closed).
+    Falls back to an inconclusive verdict when parsing fails; never mark an
+    unverified AI review as passed.
     """
     match = VERDICT_BLOCK_RE.search(review_text)
     if not match:
