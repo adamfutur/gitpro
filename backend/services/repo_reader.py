@@ -58,7 +58,8 @@ def fetch_repo_tree_recursive(token, owner, repo, max_files=25, branch='main'):
             return {
                 'path': path,
                 'name': path.rsplit('/', 1)[-1],
-                'content': content[:6000],  # Comprehensive mode: more content
+                'content': content[:6000],  # Bounded input for LLM analysis
+                'truncated': len(content) > 6000,
             }
         except Exception as e:
             print(f"Error fetching {item['path']}: {e}")
