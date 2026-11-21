@@ -225,6 +225,17 @@ export interface PrRiskRadar {
   }
 }
 
+export interface ChangeImpactGraph {
+  nodes: Array<{ id: string; label: string; changed: boolean; direct_dependents: number }>
+  edges: Array<{ from: string; to: string; type: 'imports' }>
+  changed_files: number
+  changed_files_in_sample: number
+  sampled_source_files: number
+  source_file_limit: number
+  partial: boolean
+  note: string
+}
+
 export interface PrAnalysisResult {
   repo_id: number
   pr_number: number
@@ -239,6 +250,7 @@ export interface PrAnalysisResult {
   review: string
   verdict: PrVerdict
   risk_radar?: PrRiskRadar
+  impact_graph?: ChangeImpactGraph
   generated_at: string
   status: string
 }
