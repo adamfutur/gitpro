@@ -124,3 +124,5 @@
   font-size: 14px;
   margin-bottom: 12px;
 }
+
+.gc-pr-verdict.is-inconclusive { color: var(--attention-fg); }
