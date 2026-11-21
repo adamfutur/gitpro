@@ -3,6 +3,7 @@ import json
 import re
 from services.github_service import get_repo_details, get_pr_details, get_pr_files
 from services.gemini_service import call_gemini
+from services.pr_risk import analyze_pr_risk
 
 MAX_REVIEWED_FILES = 20
 MAX_PATCH_CHARS = 3000
@@ -112,6 +113,7 @@ including files with only minor style suggestions or nitpicks.
         'files_changed': len(files),
         'additions': total_additions,
         'deletions': total_deletions,
+        'risk_radar': analyze_pr_risk(files, MAX_REVIEWED_FILES, MAX_PATCH_CHARS),
         'files': [{
             'filename': f['filename'],
             'status': f['status'],
