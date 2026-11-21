@@ -4,6 +4,7 @@ import { useOutletContext, useParams } from 'react-router-dom'
 import remarkGfm from 'remark-gfm'
 import { getPrAnalysis, getPrAnalysisJob, startPrAnalysis, type PrAnalysisResult, type PrVerdict } from '../../api'
 import RiskRadar from '../../components/RiskRadar'
+import ChangeImpactGraphView from '../../components/ChangeImpactGraph'
 import EmptyState from '../../components/EmptyState'
 import Spinner from '../../components/Spinner'
 import type { RepoOutletContext } from '../RepoDetail'
@@ -90,6 +91,7 @@ export default function PrReviewTab() {
         <>
           {result.verdict && <VerdictBanner verdict={result.verdict} />}
           {result.risk_radar && <RiskRadar data={result.risk_radar} />}
+          {result.impact_graph && <ChangeImpactGraphView graph={result.impact_graph} />}
 
           <div className="card gc-pr-stats">
             <div className="gc-pr-stats-summary">
