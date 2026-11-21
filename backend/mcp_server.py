@@ -359,8 +359,10 @@ def apply_auto_fix(repo_id: int, file_paths: list[str] | None = None) -> str:
 
         # create_fix_pr expects each fix to have file, description, new_content.
         pr_data = create_fix_pr(
-            GITHUB_TOKEN, repo_id, base_branch, selected_fixes
+            GITHUB_TOKEN, repo_id, base_branch, selected_fixes,
+            expected_base_sha=scan_result.get('base_sha'),
         )
+        _fix_scan_cache.pop(repo_id, None)
         return json.dumps({"pr_url": pr_data.get("html_url")})
     except ValueError as exc:
         return _err(str(exc))
