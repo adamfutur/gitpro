@@ -42,7 +42,8 @@ def scan_for_fixes(github_token, repo_id, on_stage=None):
     branch = repo.get('default_branch', 'main')
 
     stage('Walking the repository tree...')
-    files = [f for f in fetch_repo_tree_recursive(github_token, owner, repo_name, max_files=MAX_CANDIDATE_FILES, branch=branch)\n             if not f.get('truncated')]
+    files = [f for f in fetch_repo_tree_recursive(github_token, owner, repo_name, max_files=MAX_CANDIDATE_FILES, branch=branch)
+             if not f.get('truncated')]
 
     base = get_branch(github_token, owner, repo_name, branch)
     if not base:
