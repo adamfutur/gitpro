@@ -200,6 +200,31 @@ export interface PrVerdict {
   reason: string
 }
 
+export interface PrRiskFile {
+  path: string
+  score: number
+  level: 'low' | 'medium' | 'high'
+  changes: number
+  reasons: string[]
+}
+
+export interface PrRiskRadar {
+  score: number
+  level: 'low' | 'medium' | 'high'
+  method: string
+  files: PrRiskFile[]
+  test_files_changed: boolean
+  review_checklist: string[]
+  coverage: {
+    changed_files: number
+    files_selected_for_ai: number
+    files_with_patches: number
+    files_with_truncated_patches: number
+    files_not_selected: number
+    complete: boolean
+  }
+}
+
 export interface PrAnalysisResult {
   repo_id: number
   pr_number: number
@@ -213,6 +238,7 @@ export interface PrAnalysisResult {
   files: PrFileChange[]
   review: string
   verdict: PrVerdict
+  risk_radar?: PrRiskRadar
   generated_at: string
   status: string
 }
