@@ -17,7 +17,7 @@ def _is_important_file(path):
     return name in IMPORTANT_NAMES or any(name.endswith(ext) for ext in IMPORTANT_EXTS)
 
 
-def fetch_repo_tree_recursive(token, owner, repo, max_files=25, branch='main'):
+def fetch_repo_tree_recursive(token, owner, repo, max_files=25, branch='main', priority_paths=None):
     """
     Fetch up to `max_files` important source files from the repo.
 
@@ -43,7 +43,10 @@ def fetch_repo_tree_recursive(token, owner, repo, max_files=25, branch='main'):
     candidates = [
         item for item in tree
         if item.get('type') == 'blob' and _is_important_file(item['path'])
-    ][:max_files]
+    ]
+    priority = set(priority_paths or [])
+    candidates.sort(key=lambda item: (item['path'] not in priority, item['path']))
+    candidates = candidates[:max_files]
 
     def fetch_content(item):
         try:
