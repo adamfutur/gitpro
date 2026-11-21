@@ -196,7 +196,7 @@ export interface PrFileChange {
 }
 
 export interface PrVerdict {
-  status: 'pass' | 'fail'
+  status: 'pass' | 'fail' | 'inconclusive'
   reason: string
 }
 
@@ -225,6 +225,17 @@ export interface PrRiskRadar {
   }
 }
 
+export interface ChangeImpactGraph {
+  nodes: Array<{ id: string; label: string; changed: boolean; direct_dependents: number }>
+  edges: Array<{ from: string; to: string; type: 'imports' }>
+  changed_files: number
+  changed_files_in_sample: number
+  sampled_source_files: number
+  source_file_limit: number
+  partial: boolean
+  note: string
+}
+
 export interface PrAnalysisResult {
   repo_id: number
   pr_number: number
@@ -239,6 +250,7 @@ export interface PrAnalysisResult {
   review: string
   verdict: PrVerdict
   risk_radar?: PrRiskRadar
+  impact_graph?: ChangeImpactGraph
   generated_at: string
   status: string
 }
@@ -261,6 +273,7 @@ export interface SuggestedFix {
 }
 
 export interface FixScanResult {
+  scan_job_id: string
   repo_id: number
   branch: string
   fixes: SuggestedFix[]
@@ -379,10 +392,10 @@ export function getFixScanJob(repoId: number, jobId: string): Promise<FixScanJob
   return request(`/api/repos/${repoId}/fixes/scan/jobs/${jobId}`)
 }
 
-export function applyFixes(repoId: number, branch: string, fixes: SuggestedFix[]): Promise<CreatedFixPr> {
+export function applyFixes(repoId: number, scanJobId: string, files: string[]): Promise<CreatedFixPr> {
   return request(`/api/repos/${repoId}/fixes/apply`, {
     method: 'POST',
-    body: JSON.stringify({ branch, fixes }),
+    body: JSON.stringify({ scan_job_id: scanJobId, files }),
   })
 }
 

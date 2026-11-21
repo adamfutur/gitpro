@@ -1,38 +1,13 @@
 import datetime
-import json
-import re
 from services.github_service import get_repo_details, get_pr_details, get_pr_files
 from services.gemini_service import call_gemini
 from services.pr_risk import analyze_pr_risk
+from services.change_impact import build_change_impact_graph
+from services.review_verdict import extract_verdict as _extract_verdict
+from services.repo_reader import fetch_repo_tree_recursive
 
 MAX_REVIEWED_FILES = 20
 MAX_PATCH_CHARS = 3000
-
-VERDICT_BLOCK_RE = re.compile(r"```gitcat-verdict\s*(\{.*?\})\s*```", re.DOTALL)
-
-DEFAULT_VERDICT = {'status': 'pass', 'reason': 'No blocking issues identified.'}
-
-def _extract_verdict(review_text):
-    """
-    Pulls the trailing ```gitcat-verdict fenced JSON block out of the review text (so it
-    isn't shown as raw JSON to the reader) and returns (clean_review_text, verdict_dict).
-    Falls back to a "pass" verdict if the block is missing or malformed — a parsing bug
-    should never silently block someone's PR (fail-open, not fail-closed).
-    """
-    match = VERDICT_BLOCK_RE.search(review_text)
-    if not match:
-        return review_text.strip(), dict(DEFAULT_VERDICT)
-
-    clean_text = (review_text[:match.start()] + review_text[match.end():]).strip()
-    try:
-        verdict = json.loads(match.group(1))
-        status = verdict.get('status')
-        if status not in ('pass', 'fail'):
-            return clean_text, dict(DEFAULT_VERDICT)
-        return clean_text, {'status': status, 'reason': verdict.get('reason', '')[:300]}
-    except Exception as e:
-        print(f"Failed to parse gitcat-verdict block: {e}")
-        return clean_text, dict(DEFAULT_VERDICT)
 
 def build_pr_review(github_token, repo_id, pr_number, on_stage=None):
     """
@@ -99,6 +74,19 @@ bugs that would break functionality, or severe regressions. Use "pass" for every
 including files with only minor style suggestions or nitpicks.
 """
 
+    stage('Mapping change impact...')
+    # Read a bounded sample at the PR head, not an unrelated default-branch snapshot.
+    # GitHub may not expose fork commits through the base repository; graph then stays partial.
+    try:
+        sampled_files = fetch_repo_tree_recursive(
+            github_token, owner, repo_name, max_files=80,
+            branch=pr['head']['sha'],
+            priority_paths=[f['filename'] for f in files],
+        )
+    except Exception:
+        sampled_files = []
+    impact_graph = build_change_impact_graph(files, sampled_files)
+
     stage('Generating AI review with Gemini...')
     raw_review = call_gemini(prompt)
     review, verdict = _extract_verdict(raw_review)
@@ -114,6 +102,7 @@ including files with only minor style suggestions or nitpicks.
         'additions': total_additions,
         'deletions': total_deletions,
         'risk_radar': analyze_pr_risk(files, MAX_REVIEWED_FILES, MAX_PATCH_CHARS),
+        'impact_graph': impact_graph,
         'files': [{
             'filename': f['filename'],
             'status': f['status'],

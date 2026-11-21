@@ -91,15 +91,27 @@ def get_pr_details(token, owner, repo, pr_number):
     return None
 
 def get_pr_files(token, owner, repo, pr_number, per_page=100):
+    """Paginate GitHub's PR files endpoint; never silently return partial coverage."""
     headers = {'Authorization': f'token {token}'}
-    response = requests.get(
-        f"{GITHUB_API_URL}/repos/{owner}/{repo}/pulls/{pr_number}/files",
-        headers=headers,
-        params={'per_page': per_page},
-    )
-    if response.status_code == 200:
-        return response.json()
-    return []
+    files = []
+    for page in range(1, 31):  # GitHub's PR files endpoint caps responses at 3000 files.
+        response = requests.get(
+            f"{GITHUB_API_URL}/repos/{owner}/{repo}/pulls/{pr_number}/files",
+            headers=headers,
+            params={'per_page': per_page, 'page': page},
+            timeout=30,
+        )
+        response.raise_for_status()
+        batch = response.json()
+        if not isinstance(batch, list):
+            raise ValueError("Unexpected pull request files response")
+        files.extend(batch)
+        if len(batch) < per_page:
+            break
+    else:
+        raise ValueError("Pull request too large to report complete file coverage")
+    return files
+
 
 def post_pr_comment(token, owner, repo, pr_number, body):
     """Posts a comment on a pull request (PRs are issues under the hood on GitHub)."""

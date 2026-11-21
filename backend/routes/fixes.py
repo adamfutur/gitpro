@@ -33,6 +33,7 @@ def _run_fix_scan(job_id, repo_id, github_token):
     try:
         fix_scan_jobs[job_id]['status'] = 'running'
         result = scan_for_fixes(github_token, repo_id, on_stage=set_stage)
+        result['scan_job_id'] = job_id
         fix_scan_jobs[job_id]['status'] = 'completed'
         fix_scan_jobs[job_id]['result'] = result
         fix_scan_jobs[job_id]['finished_at'] = datetime.datetime.utcnow().isoformat()
@@ -100,14 +101,36 @@ def apply_fixes(repo_id):
     if not github_token:
         return jsonify({'error': 'Unauthorized'}), 401
 
-    data = request.json or {}
-    branch = data.get('branch')
-    selected_fixes = data.get('fixes')
-    if not branch or not selected_fixes:
-        return jsonify({'error': 'branch and fixes are required'}), 400
+    data = request.get_json(silent=True) or {}
+    job_id = data.get('scan_job_id')
+    selected_paths = data.get('files')
+    if not isinstance(job_id, str) or not isinstance(selected_paths, list):
+        return jsonify({'error': 'scan_job_id and selected file paths are required'}), 400
+    if not selected_paths or len(selected_paths) > 5 or any(not isinstance(p, str) for p in selected_paths) or len(set(selected_paths)) != len(selected_paths):
+        return jsonify({'error': 'Select 1-5 unique file paths'}), 400
 
+    job = fix_scan_jobs.get(job_id)
+    if (not job or job['repo_id'] != repo_id or
+            job['github_user_id'] != _github_user_id or job['status'] != 'completed'):
+        return jsonify({'error': 'Scan expired or unavailable. Run a new scan.'}), 409
+    completed_at = datetime.datetime.fromisoformat(job['finished_at'])
+    if datetime.datetime.utcnow() - completed_at > datetime.timedelta(minutes=15):
+        return jsonify({'error': 'Scan expired. Run a new scan.'}), 409
+    scan = job['result']
+    allowed = {f['file']: f for f in scan['fixes']}
+    if any(path not in allowed for path in selected_paths):
+        return jsonify({'error': 'Fix selection was not part of this scan'}), 400
+
+    # Never accept rewritten source content from the browser. Consume snapshot
+    # before writing, so retries cannot accidentally create duplicate PRs.
+    selected_fixes = [allowed[path] for path in selected_paths]
+    job['status'] = 'applying'
     try:
-        pr = create_fix_pr(github_token, repo_id, branch, selected_fixes)
+        pr = create_fix_pr(
+            github_token, repo_id, scan['branch'], selected_fixes,
+            expected_base_sha=scan['base_sha'],
+        )
+        job['status'] = 'applied'
         return jsonify({
             'number': pr['number'],
             'html_url': pr['html_url'],

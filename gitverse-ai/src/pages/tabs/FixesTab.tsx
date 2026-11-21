@@ -54,7 +54,7 @@ export default function FixesTab() {
     setApplying(true)
     setApplyError(null)
     try {
-      const pr = await applyFixes(repo.id, result.branch, selectedFixes)
+      const pr = await applyFixes(repo.id, result.scan_job_id, selectedFixes.map((f) => f.file))
       setCreatedPr(pr)
     } catch (err) {
       setApplyError(err instanceof Error ? err.message : 'Failed to create fix PR')
