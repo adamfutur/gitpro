@@ -261,6 +261,7 @@ export interface SuggestedFix {
 }
 
 export interface FixScanResult {
+  scan_job_id: string
   repo_id: number
   branch: string
   fixes: SuggestedFix[]
@@ -379,10 +380,10 @@ export function getFixScanJob(repoId: number, jobId: string): Promise<FixScanJob
   return request(`/api/repos/${repoId}/fixes/scan/jobs/${jobId}`)
 }
 
-export function applyFixes(repoId: number, branch: string, fixes: SuggestedFix[]): Promise<CreatedFixPr> {
+export function applyFixes(repoId: number, scanJobId: string, files: string[]): Promise<CreatedFixPr> {
   return request(`/api/repos/${repoId}/fixes/apply`, {
     method: 'POST',
-    body: JSON.stringify({ branch, fixes }),
+    body: JSON.stringify({ scan_job_id: scanJobId, files }),
   })
 }
 
